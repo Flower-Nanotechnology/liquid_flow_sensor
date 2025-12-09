@@ -1,0 +1,5 @@
+# Built files
+Debug/
+
+# Eclipse local settings
+.settings/language.settings.xml
