@@ -1,7 +1,7 @@
 /*
  ******************************************************************************
- * @file           : system_clock_config.h
- * @brief          : System clock configuration prototype
+ * @file           : dma_init.h
+ * @brief          : DMA initialization function prototype
  ******************************************************************************
  *
  * Author: Thiago Oliveira
@@ -10,8 +10,8 @@
  ******************************************************************************
  */
 
-#ifndef INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_
-#define INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_
+#ifndef INC_SYSTEM_INIT_DMA_INIT_H_
+#define INC_SYSTEM_INIT_DMA_INIT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ extern "C" {
 
 
 /* Exported functions prototypes ---------------------------------------------*/
-void system_clock_config_wrapper(void);
+void dma_init_wrapper(void);
 
 
 #ifdef __cplusplus
@@ -27,4 +27,4 @@ void system_clock_config_wrapper(void);
 #endif
 
 
-#endif /* INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_ */
+#endif /* INC_SYSTEM_INIT_DMA_INIT_H_ */

@@ -20,8 +20,10 @@
   ******************************************************************************
   */
 
-// Includes
-#include "period_elapsed_cb.h"
+
+/* Includes ------------------------------------------------------------------*/
+#include "stm32h7xx_hal.h"
+#include "stm32h7xx_hal_tim.h"
 
 
 /**
@@ -36,6 +38,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM6)
 	{
-	HAL_IncTick();
+		HAL_IncTick();
 	}
 }

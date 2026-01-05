@@ -1,60 +1,116 @@
-/*
- ******************************************************************************
- * @file           : gpio.c
- * @brief          : GPIO initialization function
- ******************************************************************************
- *
- * Author: Thiago Oliveira
- *   Date: December, 2025
- *
- ******************************************************************************
- */
-
-#ifndef INC_SYSTEM_INIT_GPIO_INIT_H_
-#define INC_SYSTEM_INIT_GPIO_INIT_H_
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+/**
+  ******************************************************************************
+  * @file           : gpio_init.c
+  * @brief          : GPIO init function
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  *
+  * Modified by: Thiago Oliveira
+  *        Date: December, 2025
+  *
+  ******************************************************************************
+  */
 
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32h7xx_hal.h"
+#include "main.h"
 
-/* Private functions prototype -----------------------------------------------*/
 
 /**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
   */
-void MX_GPIO_Init(GPIO_InitTypeDef GPIO_InitStruct, uint16_t pin, GPIO_TypeDef* port, uint32_t mode, uint32_t pull, uint32_t speed)
+static void MX_GPIO_Init(void)
 {
-	/* GPIO ports clock enable */
-	if     (port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
-	else if(port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();
-	else if(port == GPIOC) __HAL_RCC_GPIOC_CLK_ENABLE();
-	else if(port == GPIOD) __HAL_RCC_GPIOD_CLK_ENABLE();
-	else if(port == GPIOE) __HAL_RCC_GPIOE_CLK_ENABLE();
-	else if(port == GPIOF) __HAL_RCC_GPIOF_CLK_ENABLE();
-	else if(port == GPIOG) __HAL_RCC_GPIOG_CLK_ENABLE();
-	else if(port == GPIOH) __HAL_RCC_GPIOH_CLK_ENABLE();
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-	/* Configure GPIO pin Output Level */
-	if(mode == GPIO_MODE_OUTPUT_PP)
-		HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);
+	// GPIO Ports Clock Enable
+	__HAL_RCC_GPIOC_CLK_ENABLE(); // C
+	__HAL_RCC_GPIOD_CLK_ENABLE(); // D
+	__HAL_RCC_GPIOE_CLK_ENABLE(); // E
+	__HAL_RCC_GPIOG_CLK_ENABLE(); // G
 
-	/* Configure GPIO pin */
-	GPIO_InitStruct.Pin = pin;
-	GPIO_InitStruct.Mode = mode;
-	GPIO_InitStruct.Pull = pull;
-	GPIO_InitStruct.Speed = speed;
-	HAL_GPIO_Init(port, &GPIO_InitStruct);
+	// ---------------------------------------
+	//     LCD DISPLAY
+	// ---------------------------------------
+
+	// Configure GPIO pin Output Level
+	HAL_GPIO_WritePin(GPIOD, LCD_DCX_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOD, LCD_RESET_Pin, GPIO_PIN_SET);
+
+	// Configure GPIO pin Output Level
+	HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_RESET);
+
+	// Configure GPIO pin : LCD_DCX_Pin
+	GPIO_InitStruct = (GPIO_InitTypeDef){
+		.Pin = LCD_DCX_Pin,
+		.Mode = GPIO_MODE_OUTPUT_PP,
+		.Pull = GPIO_NOPULL,
+		.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+	};
+	HAL_GPIO_Init(LCD_DCX_GPIO_Port, &GPIO_InitStruct);
+
+	// Configure GPIO pin : LCD_RESET_Pin
+	GPIO_InitStruct = (GPIO_InitTypeDef){
+		.Pin = LCD_RESET_Pin,
+		.Mode = GPIO_MODE_OUTPUT_PP,
+		.Pull = GPIO_PULLUP,
+		.Speed = GPIO_SPEED_FREQ_LOW,
+	};
+	HAL_GPIO_Init(LCD_RESET_GPIO_Port, &GPIO_InitStruct);
+
+	// Configure GPIO pin : LCD_CS_Pin
+	GPIO_InitStruct = (GPIO_InitTypeDef){
+		.Pin = LCD_CS_Pin,
+		.Mode = GPIO_MODE_OUTPUT_PP,
+		.Pull = GPIO_PULLUP,
+		.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+	};
+	HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);
+
+
+	// ---------------------------------------
+	//     TOUCH DISPLAY
+	// ---------------------------------------
+
+	// Configure GPIO pin Output Level
+	HAL_GPIO_WritePin(GPIOE, TOUCH_CS_Pin, GPIO_PIN_RESET);
+
+	// Configure GPIO pin : TOUCH_CS_Pin
+	GPIO_InitStruct = (GPIO_InitTypeDef){
+		.Pin = TOUCH_CS_Pin,
+		.Mode = GPIO_MODE_OUTPUT_PP,
+		.Pull = GPIO_PULLUP,
+		.Speed = GPIO_SPEED_FREQ_LOW,
+	};
+	HAL_GPIO_Init(TOUCH_CS_GPIO_Port, &GPIO_InitStruct);
+
+	// Configure GPIO pin : TC_PEN_Pin
+	GPIO_InitStruct = (GPIO_InitTypeDef){
+		.Pin = TC_PEN_Pin,
+		.Mode = GPIO_MODE_INPUT,
+		.Pull = GPIO_PULLUP,
+		.Speed = GPIO_SPEED_FREQ_LOW,
+	};
+	HAL_GPIO_Init(TC_PEN_GPIO_Port, &GPIO_InitStruct);
 }
 
 
-#ifdef __cplusplus
+/**
+ * @brief User-level wrapper for CubeMX-generated GPIO init.
+ */
+void gpio_init_wrapper(void)
+{
+	return MX_GPIO_Init();
 }
-#endif
 
-#endif /* INC_SYSTEM_INIT_GPIO_INIT_H_ */

@@ -1,17 +1,17 @@
 /*
  ******************************************************************************
- * @file           : system_clock_config.h
- * @brief          : System clock configuration prototype
+ * @file           : spi1_init.h
+ * @brief          : Function prototype of wrapper to init SPI1
  ******************************************************************************
  *
  * Author: Thiago Oliveira
- *   Date: Dezember, 2025
+ *   Date: December, 2025
  *
  ******************************************************************************
  */
 
-#ifndef INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_
-#define INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_
+#ifndef INC_SYSTEM_INIT_SPI1_INIT_H_
+#define INC_SYSTEM_INIT_SPI1_INIT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,12 +19,12 @@ extern "C" {
 
 
 /* Exported functions prototypes ---------------------------------------------*/
-void system_clock_config_wrapper(void);
+void spi1_init_wrapper(void);
 
 
 #ifdef __cplusplus
 }
 #endif
 
+#endif /* INC_SYSTEM_INIT_SPI1_INIT_H_ */
 
-#endif /* INC_SYSTEM_CONFIGURATIONS_SYSTEM_CLOCK_CONFIG_H_ */

@@ -18,11 +18,9 @@ extern "C" {
 #endif
 
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32h7xx_hal.h"
+/* Exported functions prototypes ---------------------------------------------*/
+void mpu_config_wrapper(void);
 
-/* Private functions prototype -----------------------------------------------*/
-void MPU_Config(void);
 
 #ifdef __cplusplus
 }

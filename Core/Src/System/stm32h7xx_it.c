@@ -25,28 +25,13 @@
 #include "main.h"
 #include "stm32h7xx_it.h"
 
+// LVGL
+#include "tick/lv_tick.h"
 
-/* Private includes ----------------------------------------------------------*/
-
-
-/* Private typedef -----------------------------------------------------------*/
-
-
-/* Private define ------------------------------------------------------------*/
-
-
-/* Private macro -------------------------------------------------------------*/
-
-
-/* Private variables ---------------------------------------------------------*/
-
-
-/* Private function prototypes -----------------------------------------------*/
-
-
-/* Private user code ---------------------------------------------------------*/
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_spi3_tx;
+extern SPI_HandleTypeDef hspi3;
 extern TIM_HandleTypeDef htim6;
 
 
@@ -120,10 +105,28 @@ void DebugMon_Handler(void)
 /* please refer to the startup file (startup_stm32h7xx.s).                    */
 /******************************************************************************/
 
+
+/**
+  * @brief This function handles DMA1 stream0 global interrupt.
+  */
+void DMA1_Stream0_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_spi3_tx);
+}
+
+/**
+  * @brief This function handles SPI3 global interrupt.
+  */
+void SPI3_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&hspi3);
+}
+
 /**
   * @brief This function handles TIM6 global interrupt, DAC1_CH1 and DAC1_CH2 underrun error interrupts.
   */
 void TIM6_DAC_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim6);
+  lv_tick_inc(1);
 }

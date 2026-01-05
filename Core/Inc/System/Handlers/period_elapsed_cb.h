@@ -18,12 +18,7 @@ extern "C" {
 #endif
 
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_tim.h"
-
-
-/* Private functions prototype -----------------------------------------------*/
+/* Exported functions prototypes ---------------------------------------------*/
 
 /**
   * @brief  Period elapsed callback in non blocking mode

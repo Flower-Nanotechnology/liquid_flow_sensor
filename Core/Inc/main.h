@@ -32,24 +32,52 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
-
-
-/* Private includes ----------------------------------------------------------*/
-
-// System
-#include "system_clock_config.h"
-#include "mpu_config.h"
-#include "error_handler.h"
-#include "period_elapsed_cb.h"
-
-// Peripherals
-#include "gpio_init.h"
+#include "cmsis_os.h"
+#include "core_cm7.h"
 
 
 /* Private defines -----------------------------------------------------------*/
-#define LED_PIN_Pin GPIO_PIN_10
-#define LED_PIN_GPIO_Port GPIOD
 
+// Hardware localization: LCD PINS
+#define LCD_SDI_Pin GPIO_PIN_12
+#define LCD_SDI_Port GPIOC
+
+#define LCD_SCK_Pin GPIO_PIN_10
+#define LCD_SCK_Port GPIOC
+
+#define LCD_CS_Pin GPIO_PIN_9
+#define LCD_CS_GPIO_Port GPIOG
+
+#define LCD_DCX_Pin GPIO_PIN_2
+#define LCD_DCX_GPIO_Port GPIOD
+
+#define LCD_RESET_Pin GPIO_PIN_5
+#define LCD_RESET_GPIO_Port GPIOD
+
+
+// Hardware localization: TOUCH PINS
+#define TOUCH_SCK_Pin GPIO_PIN_5
+#define TOUCH_SCK_GPIO_Port GPIOA
+
+#define TOUCH_SDO_Pin GPIO_PIN_6
+#define TOUCH_SDO_GPIO_Port GPIOA
+
+#define TOUCH_SDI_Pin GPIO_PIN_7
+#define TOUCH_SDI_GPIO_Port GPIOA
+
+#define TOUCH_CS_Pin GPIO_PIN_5
+#define TOUCH_CS_GPIO_Port GPIOE
+
+#define TC_PEN_Pin GPIO_PIN_5
+#define TC_PEN_GPIO_Port GPIOC
+
+
+// ILI9341 driver callbacks
+#define  BUS_SPI3_POLL_TIMEOUT  0x1000U
+
+// Display params
+#define  LCD_H_RES  240
+#define  LCD_V_RES  320
 
 #ifdef __cplusplus
 }

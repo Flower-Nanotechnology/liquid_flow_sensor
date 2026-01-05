@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file           : error_handler.c
-  * @brief          : Error handler function
+  * @file           : dma_init.c
+  * @brief          : DMA init function
   ******************************************************************************
   * @attention
   *
@@ -26,29 +26,27 @@
 
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
+  * Enable DMA controller clock
   */
-void Error_Handler(void)
+static void MX_DMA_Init(void)
 {
-	__disable_irq();
-	while (1)
-	{
-	}
+
+  // DMA controller clock enable
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  // DMA interrupt init
+  // DMA1_Stream0_IRQn interrupt configuration
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+
 }
-#ifdef USE_FULL_ASSERT
+
+
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
+ * @brief User-level wrapper for CubeMX-generated DMA init.
+ */
+void dma_init_wrapper(void)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+	return MX_DMA_Init();
 }
-#endif /* USE_FULL_ASSERT */
+
