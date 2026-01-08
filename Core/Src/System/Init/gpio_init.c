@@ -84,7 +84,7 @@ static void MX_GPIO_Init(void)
 	// ---------------------------------------
 
 	// Configure GPIO pin Output Level
-	HAL_GPIO_WritePin(GPIOE, TOUCH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOE, TOUCH_CS_Pin, GPIO_PIN_SET);
 
 	// Configure GPIO pin : TOUCH_CS_Pin
 	GPIO_InitStruct = (GPIO_InitTypeDef){
@@ -95,14 +95,17 @@ static void MX_GPIO_Init(void)
 	};
 	HAL_GPIO_Init(TOUCH_CS_GPIO_Port, &GPIO_InitStruct);
 
-	// Configure GPIO pin : TC_PEN_Pin
+	// Configure GPIO pin : TOUCH_IRQ_Pin
 	GPIO_InitStruct = (GPIO_InitTypeDef){
-		.Pin = TC_PEN_Pin,
-		.Mode = GPIO_MODE_INPUT,
+		.Pin = TOUCH_IRQ_Pin,
+		.Mode = GPIO_MODE_IT_FALLING,
 		.Pull = GPIO_PULLUP,
-		.Speed = GPIO_SPEED_FREQ_LOW,
 	};
-	HAL_GPIO_Init(TC_PEN_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_Init(TOUCH_IRQ_GPIO_Port, &GPIO_InitStruct);
+
+
+	HAL_NVIC_SetPriority(TOUCH_IRQ_EXTI_IRQn, 5, 0);
+	HAL_NVIC_EnableIRQ(TOUCH_IRQ_EXTI_IRQn);
 }
 
 

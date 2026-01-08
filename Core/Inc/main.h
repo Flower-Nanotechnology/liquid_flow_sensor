@@ -68,16 +68,22 @@ extern "C" {
 #define TOUCH_CS_Pin GPIO_PIN_5
 #define TOUCH_CS_GPIO_Port GPIOE
 
-#define TC_PEN_Pin GPIO_PIN_5
-#define TC_PEN_GPIO_Port GPIOC
+#define TOUCH_IRQ_Pin GPIO_PIN_5
+#define TOUCH_IRQ_GPIO_Port GPIOC
+#define TOUCH_IRQ_EXTI_IRQn EXTI9_5_IRQn
 
 
 // ILI9341 driver callbacks
 #define  BUS_SPI3_POLL_TIMEOUT  0x1000U
 
+
 // Display params
 #define  LCD_H_RES  240
 #define  LCD_V_RES  320
+
+/* Debug defines -------------------------------------------------------------*/
+#define DEBUG_TOUCH 1
+
 
 #ifdef __cplusplus
 }

@@ -28,11 +28,17 @@
 // LVGL
 #include "tick/lv_tick.h"
 
+// XPT2046
+#include "xpt2046.h"
+
 
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_spi3_tx;
 extern SPI_HandleTypeDef hspi3;
 extern TIM_HandleTypeDef htim6;
+
+// Touch
+extern XPT2046_Handler touch_handler;
 
 
 
@@ -44,9 +50,7 @@ extern TIM_HandleTypeDef htim6;
   */
 void NMI_Handler(void)
 {
-	while (1)
-	{
-	}
+	while (1){}
 }
 
 /**
@@ -54,9 +58,7 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-	while (1)
-	{
-	}
+	while (1){}
 }
 
 /**
@@ -64,9 +66,7 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-	while (1)
-	{
-	}
+	while (1){}
 }
 
 /**
@@ -74,9 +74,7 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-	while (1)
-	{
-	}
+	while (1){}
 }
 
 /**
@@ -84,9 +82,7 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-	while (1)
-	{
-	}
+	while (1){}
 }
 
 /**
@@ -107,11 +103,20 @@ void DebugMon_Handler(void)
 
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(TOUCH_IRQ_Pin);
+	XPT2046_EXTICallback(&touch_handler);
+}
+
+/**
   * @brief This function handles DMA1 stream0 global interrupt.
   */
 void DMA1_Stream0_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(&hdma_spi3_tx);
+	HAL_DMA_IRQHandler(&hdma_spi3_tx);
 }
 
 /**
@@ -119,7 +124,7 @@ void DMA1_Stream0_IRQHandler(void)
   */
 void SPI3_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&hspi3);
+	HAL_SPI_IRQHandler(&hspi3);
 }
 
 /**
@@ -127,6 +132,7 @@ void SPI3_IRQHandler(void)
   */
 void TIM6_DAC_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&htim6);
-  lv_tick_inc(1);
+	HAL_TIM_IRQHandler(&htim6);
+	lv_tick_inc(1);
+	XPT2046_TIMCallback(&touch_handler);
 }

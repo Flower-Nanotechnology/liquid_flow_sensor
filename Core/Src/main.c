@@ -25,6 +25,7 @@
 #include "main.h"
 
 #include <stdio.h>
+#include <styles/styles.h>
 
 // System
 #include "error_handler.h"
@@ -45,12 +46,19 @@
 #include "ili9341_driver_callbacks.h"
 
 // Touch
-// #include "xpt2046.h"
+#include "xpt2046.h"
+#include "calibrate_touch.h"
+#include "demo.h"
 
 // Screens
 #include "screens/main_screen.h"
+#include "screens/settings_screen.h"
 
+// Styles
+#include "styles/styles.h"
 
+// System
+#include "system/type_definitions.h"
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -65,14 +73,24 @@ volatile int lcd_bus_busy = 0;
 // RTOS
 osThreadId_t lvgl_task_handle;
 const osThreadAttr_t lvgl_task_attributes = {
-	.name = "lvgl_task",
-	.stack_size = 1024 * 4,
-	.priority = (osPriority_t)osPriorityNormal
+	.name       = "lvgl_task",
+	.stack_size = 1024 * 4 * 2,
+	.priority   = (osPriority_t)osPriorityNormal
 };
 
-// Logic
-lv_obj_t *ui_label_debug;
-lv_obj_t *ui_touch_marker;
+// XPT2046
+XPT2046_Handler touch_handler;
+XPT2046_ConnectionData cnt_touch = {
+    .hspi     = &hspi1,
+    .cs_port  = TOUCH_CS_GPIO_Port,
+    .cs_pin   = TOUCH_CS_Pin,
+    .irq_port = TOUCH_IRQ_GPIO_Port,
+    .irq_pin  = TOUCH_IRQ_Pin,
+    .exti_irq = TOUCH_IRQ_EXTI_IRQn
+};
+
+/* Public variables ----------------------------------------------------------*/
+
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -82,9 +100,15 @@ void ui_init(lv_display_t *disp);
 
 
 // TOUCH
-void touch_init(void);
-void touchpad_read_cb(lv_display_t * disp, lv_indev_data_t * data);
-// void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t * data);
+void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t * data);
+
+
+/* Debug private variables --------------------------------------------------*/
+
+// Touch
+#if DEBUG_TOUCH
+lv_obj_t *ui_touch_marker;
+#endif // DEBUG_TOUCH
 
 
 /**
@@ -127,7 +151,7 @@ int main(void)
 
 
 	/* =========================================
-	 *    LVGL
+	 *    TOUCH
 	 * ========================================= */
 
 
@@ -153,6 +177,7 @@ int main(void)
 void lvgl_task_callback(void *argument)
 {
 	// Initialize LVGL
+	// XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 	lv_init();
 
 	// Initiliaze LCD I/O
@@ -161,17 +186,6 @@ void lvgl_task_callback(void *argument)
 	// Create the LVGL display object with ILI9341 driver
 	lcd_disp = lv_ili9341_create(LCD_H_RES, LCD_V_RES, LV_LCD_FLAG_NONE, lcd_send_cmd, lcd_send_color);
 	lv_display_set_rotation(lcd_disp, LV_DISPLAY_ROTATION_90);
-
-
-
-//	// Touch initialization
-//	touch_init();
-//
-//	lv_indev_t * indev = lv_indev_create();
-//	lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
-//	lv_indev_set_read_cb(indev, (lv_indev_read_cb_t)touchpad_read_cb);
-
-
 
 
 	// Allocate draw buffers on the heap. In this example we use two partial buffers of 1/10th size of the screen
@@ -196,7 +210,42 @@ void lvgl_task_callback(void *argument)
 	}
 	lv_display_set_buffers(lcd_disp, buf1, buf2, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
+
+	XPT2046_InitTouch(&touch_handler, 20, &cnt_touch);  // 20ms
+	//XPT2046_CalibrateTouch(&touch1);
+
+	// DISPLAY 1
+//	touch1.coef.Dx1 = 0xFFFFD12A2E400000LL;
+//	touch1.coef.Dx2 = 0x0000001C58400000LL;
+//	touch1.coef.Dx3 = 0x02A41CEE3A000000LL;
+//	touch1.coef.Dy1 = 0x0000000060400000LL;
+//	touch1.coef.Dy2 = 0X00001FEA6D600000LL;
+//	touch1.coef.Dy3 = 0xFFF5E47E1D800000LL;
+//	touch1.coef.D   = 0x0001E35E90000000LL;
+
+	// DISPLAY 2
+	touch_handler.coef.Dx1 = 0xFFFFD1A61B400000LL;
+	touch_handler.coef.Dx2 = 0x000000206F520000LL;
+	touch_handler.coef.Dx3 = 0x0299EC6347B80000LL;
+	touch_handler.coef.Dy1 = 0xFFFFFFFCE2800000LL;
+	touch_handler.coef.Dy2 = 0X00001F42D73A0000LL;
+	touch_handler.coef.Dy3 = 0xFFF63560CF180000LL;
+	touch_handler.coef.D   = 0x0001D9744B000000LL;
+
+	touch_handler.fl_interrupt = 1;
+
+	lv_indev_t * indev = lv_indev_create();
+	lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+	lv_indev_set_read_cb(indev, (lv_indev_read_cb_t)touchpad_read_cb);
+
+	// Styles init
+	styles_init();
+
+
 	ui_init(lcd_disp);
+	//ui_init_test(lcd_disp);
+
+	//LVGL_Draw_TouchPenDemo(&touch1);
 
 	for(;;)
 	{
@@ -215,124 +264,72 @@ void lvgl_task_callback(void *argument)
 void ui_init(lv_display_t *disp)
 {
 	main_screen_create();
-	ui_update_mode_label("Injection"); // Mode is "Injection" as default
+	settings_screen_create();
+	select_channel_screen_create();
+
+	// Set default values on display
+
+	// MODE
+	ui_update_mode_state_label("Injection");   // Mode is Injection as default
+	ui_update_ch1_value_label_rate("0.0");     // CH1 flow is 0.0 as default
+	ui_update_ch1_unit_label_rate("ml/min");   // CH1 unit is ml/min as deafult
+	ui_update_ch2_value_label_rate("0.0");     // CH2 flow is 0.0 as default
+	ui_update_ch2_unit_label_rate("ml/min");   // CH2 unit is ml/min as deafult
+
+	// TARGET
+	ui_update_ch1_mode_label_target("Vol.");   // CH1 target mode is volume as default
+	ui_update_ch1_value_label_target("0.0");   // CH1 target value is 0.0 as default
+	ui_update_ch1_unit_label_target("ml");     // CH1 target unit is ml as default
+	ui_update_ch2_mode_label_target("Vol.");   // CH1 target mode is volume as default
+	ui_update_ch2_value_label_target("0.0");   // CH1 target value is 0.0 as default
+	ui_update_ch2_unit_label_target("ml");     // CH1 target unit is ml as default
+
+	ui_update_ch1_run_btn_icon_settings(CHANNEL_STATE__STOPPED); // CH1 start stopped as default
+	ui_update_ch2_run_btn_icon_settings(CHANNEL_STATE__STOPPED); // CH2 start stopped as default
 
 	main_screen_load();
+
+
+#if DEBUG_TOUCH
+	ui_touch_marker = lv_canvas_create(lv_screen_active());
+	lv_obj_set_size(ui_touch_marker, 10, 10);
+	lv_obj_set_style_bg_color(ui_touch_marker, lv_palette_main(LV_PALETTE_RED), 0);
+	lv_obj_set_style_bg_opa(ui_touch_marker, LV_OPA_COVER, 0);
+	lv_obj_set_style_radius(ui_touch_marker, LV_RADIUS_CIRCLE, 0);
+	lv_obj_remove_flag(ui_touch_marker, LV_OBJ_FLAG_CLICKABLE); // Do not interter touch
+#endif
 }
 
 
-
-//void ui_init(lv_display_t *disp)
-//{
-//	/* set screen background to white */
-//	lv_obj_t *scr = lv_screen_active();
-//	lv_obj_set_style_bg_color(scr, lv_color_white(), 0);
-//	lv_obj_set_style_bg_opa(scr, LV_OPA_100, 0);
-//
-//	/* create label */
-//	ui_label_debug = lv_label_create(scr);
-//	lv_obj_set_align(ui_label_debug, LV_ALIGN_CENTER);
-//	lv_obj_set_height(ui_label_debug, LV_SIZE_CONTENT);
-//	lv_obj_set_width(ui_label_debug, LV_SIZE_CONTENT);
-//	lv_obj_set_style_text_font(ui_label_debug, &lv_font_montserrat_14, 0);
-////	lv_obj_set_style_text_color(ui_label_debug, lv_palette_main(LV_PALETTE_RED), 0); // This is red background
-//	lv_obj_set_style_text_color(ui_label_debug, lv_palette_main(LV_PALETTE_BLUE), 0); // This is red background
-//	lv_label_set_text(ui_label_debug, "Aguardando toque...");
-//}
-
-////void ui_init(lv_display_t *disp)
-////{
-////    /* tela branca */
-////    lv_obj_t *scr = lv_screen_active();
-////    lv_obj_set_style_bg_color(scr, lv_color_white(), 0);
-////    lv_obj_set_style_bg_opa(scr, LV_OPA_100, 0);
-////
-////    /* label debug */
-////    ui_label_debug = lv_label_create(scr);
-////    lv_obj_set_align(ui_label_debug, LV_ALIGN_CENTER);
-////    lv_obj_set_style_text_font(ui_label_debug, &lv_font_montserrat_14, 0);
-////    lv_obj_set_style_text_color(ui_label_debug,
-////                                lv_palette_main(LV_PALETTE_BLUE), 0);
-////    lv_label_set_text(ui_label_debug, "Aguardando toque...");
-////
-////    /* marcador do touch: quadrado 7x7 preto */
-////    ui_touch_marker = lv_obj_create(scr);
-////    lv_obj_set_size(ui_touch_marker, 7, 7);
-////    lv_obj_set_style_bg_color(ui_touch_marker, lv_color_black(), 0);
-////    lv_obj_set_style_bg_opa(ui_touch_marker, LV_OPA_100, 0);
-////    lv_obj_set_style_border_width(ui_touch_marker, 0, 0);
-////
-////    /* começa invisível */
-////    lv_obj_add_flag(ui_touch_marker, LV_OBJ_FLAG_HIDDEN);
-////}
-//
 ///* =========================================
 // *    Touch callback
 // * ========================================= */
-//
-//void touch_init(void)
-//{
-//	xpt2046_init();
-//	xpt2046_bit_mode(XPT2046_12BIT_MODE);
-//	xpt2046_set_size(LCD_H_RES, LCD_V_RES);
-//	xpt2046_orientation(XPT2046_ORIENTATION_LANDSCAPE);
-//	xpt2046_set_calibration(
-//	    2447, 1680,   // x_max , x_min
-//	    3811, 2121    // y_max , y_min
-//	);
-//
-//	xpt2046_spi(&hspi1);
-//}
-//
-//
-///* Callback de leitura do Touchpad para a LVGL */
-//void touchpad_read_cb(lv_display_t * disp, lv_indev_data_t * data)
-//{
-//    uint16_t x, y;
-//
-//    /* xpt2046_read_position retorna 0,0 se não estiver pressionado */
-//    xpt2046_read_position(&x, &y);
-//
-//    if(xpt2046_pressed())
-//    {
-//        data->state = LV_INDEV_STATE_PRESSED;
-//        data->point.x = x;
-//        data->point.y = y;
-//
-//        /* Debug visual na tela */
-//		if(ui_label_debug != NULL)
-//		{
-//			lv_label_set_text_fmt(ui_label_debug, "X: %d | Y: %d", x, y);
-//		}
-//    }
-//    else
-//    {
-//        data->state = LV_INDEV_STATE_RELEASED;
-//    }
-//}
-//
-//
-////void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
-////{
-////    uint16_t x, y;
-////    xpt2046_read_position(&x, &y);
-////
-////    if(xpt2046_pressed()) {
-////
-////        data->state = LV_INDEV_STATE_PRESSED;
-////        data->point.x = x;
-////        data->point.y = y;
-////
-////        /* centraliza o quadrado */
-////        lv_obj_clear_flag(ui_touch_marker, LV_OBJ_FLAG_HIDDEN);
-////        lv_obj_set_pos(ui_touch_marker, x - 3, y - 3);
-////
-////        char buf[64];
-////        sprintf(buf, "x=%u  y=%u", x, y);
-////        lv_label_set_text(ui_label_debug, buf);
-////    }
-////    else {
-////        data->state = LV_INDEV_STATE_RELEASED;
-////        lv_obj_add_flag(ui_touch_marker, LV_OBJ_FLAG_HIDDEN);
-////    }
-////}
+
+
+void touchpad_read_cb(lv_indev_t * indev, lv_indev_data_t * data)
+{
+    if (touch_handler.click)
+    {
+        tPoint display_point;
+        XPT2046_ConvertPoint(&display_point, &touch_handler.point, &touch_handler.coef);
+
+        data->point.x = (int16_t)display_point.y;
+        data->point.y = LCD_V_RES - (int16_t)display_point.x;
+        data->state = LV_INDEV_STATE_PRESSED;
+
+#if DEBUG_TOUCH
+        if(ui_touch_marker != NULL)
+        {
+            lv_obj_set_pos(ui_touch_marker, (int16_t)display_point.x - 5, (int16_t)display_point.y - 5);
+        }
+#endif // DEBUG_TOUCH
+
+        touch_handler.click = 0;
+    }
+    else
+    {
+        data->state = LV_INDEV_STATE_RELEASED;
+    }
+}
+
+
