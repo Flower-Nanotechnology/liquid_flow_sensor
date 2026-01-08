@@ -65,7 +65,8 @@ void settings_screen_create(void)
 	 *    PAGE TITLE
 	 * ========================================= */
 
-	title_panel_create(screen, "SETTINGS");
+	title_panel_create(screen);
+	ui_update_page_title_label("SETTINGS");
 
 
 	/* =========================================

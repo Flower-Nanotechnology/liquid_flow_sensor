@@ -22,9 +22,8 @@ extern "C" {
 #include "lvgl.h"
 
 /* Exported function prototypes ----------------------------------------------*/
-void title_panel_create(
-		lv_obj_t * screen,
-		char * text);
+void title_panel_create(lv_obj_t * screen);
+void ui_update_page_title_label(char * text);
 
 
 #ifdef __cplusplus

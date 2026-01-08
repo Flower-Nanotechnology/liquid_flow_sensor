@@ -27,9 +27,7 @@ static lv_obj_t * page_title_bg, * page_title_label;
 
 /* Function implementation ---------------------------------------------------*/
 
-void title_panel_create(
-		lv_obj_t * screen,
-		char * text)
+void title_panel_create(lv_obj_t * screen)
 {
 	/* =========================================
 	 *    PAGE TITLE
@@ -50,10 +48,14 @@ void title_panel_create(
 	lv_obj_remove_style_all(page_title_label);
 	lv_obj_add_style(page_title_label, &simple_page_title_label_style, 0);
 
-	lv_label_set_text(page_title_label, text);
-
 	lv_obj_center(page_title_label);
 	lv_obj_align(page_title_label, LV_ALIGN_TOP_RIGHT, 0, 0);
 	lv_obj_set_style_text_align(page_title_label, LV_TEXT_ALIGN_RIGHT, 0);
+}
+
+
+void ui_update_page_title_label(char * text)
+{
+	lv_label_set_text(page_title_label, text);
 }
 

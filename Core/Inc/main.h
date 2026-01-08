@@ -82,7 +82,7 @@ extern "C" {
 #define  LCD_V_RES  320
 
 /* Debug defines -------------------------------------------------------------*/
-#define DEBUG_TOUCH 1
+#define DEBUG_TOUCH 0
 
 
 #ifdef __cplusplus

@@ -59,10 +59,10 @@ void select_channel_screen_create(void)
 
 
 	/* =========================================
-	 *    PAGE TITLE
+	 *   PAGE TITLE
 	 * ========================================= */
 
-	title_panel_create(screen, "SELECT\nTHE CHANNEL");
+	title_panel_create(screen);
 
 
 	/* =========================================
@@ -112,16 +112,22 @@ void select_channel_screen_load(int selected_setting_option)
 {
 	if (selected_setting_option == SETTING_OPTION__SET_UNIT)
 	{
+		ui_update_page_title_label("SET UNIT");
+
 		lv_obj_add_event_cb(ch1_btn_bg, set_unit_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_unit_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
 	}
 	else if (selected_setting_option == SETTING_OPTION__SET_TARGET)
 	{
+		ui_update_page_title_label("SET TARGET");
+
 		lv_obj_add_event_cb(ch1_btn_bg, set_target_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_target_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
 	}
 	else if (selected_setting_option == SETTING_OPTION__SET_FLOW_RATE)
 	{
+		ui_update_page_title_label("SET FLOW RATE");
+
 		lv_obj_add_event_cb(ch1_btn_bg, set_flow_rate_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_flow_rate_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
 	}
