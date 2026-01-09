@@ -55,7 +55,7 @@
 #include "screens/select_channel_screen.h"
 #include "screens/set_unit_screen.h"
 #include "screens/set_target_screen.h"
-//#include "screens/set_flow_rate_screen.h"
+#include "screens/set_flow_rate_screen.h"
 
 // Styles
 #include "styles/styles.h"
@@ -274,6 +274,7 @@ void ui_init(lv_display_t *disp)
 	select_channel_screen_create();
 	set_unit_screen_create();
 	set_target_screen_create();
+	set_flow_rate_screen_create();
 
 	// Set default values on display
 
