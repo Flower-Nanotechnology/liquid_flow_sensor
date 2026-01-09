@@ -25,7 +25,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void main_screen_create(void);
-void main_screen_load(void);
+void main_screen_load(int selected_setting_option);
 
 // MODE/RATE BLOCK
 void ui_update_mode_state_label(const char * mode_name);

@@ -25,7 +25,6 @@
 #include "main.h"
 
 #include <stdio.h>
-#include <styles/styles.h>
 
 // System
 #include "error_handler.h"
@@ -53,6 +52,10 @@
 // Screens
 #include "screens/main_screen.h"
 #include "screens/settings_screen.h"
+#include "screens/select_channel_screen.h"
+#include "screens/set_unit_screen.h"
+#include "screens/set_target_screen.h"
+//#include "screens/set_flow_rate_screen.h"
 
 // Styles
 #include "styles/styles.h"
@@ -60,15 +63,17 @@
 // System
 #include "system/type_definitions.h"
 
-/* Private variables ---------------------------------------------------------*/
 
+/* Public variables ----------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi1; // Touch
 extern SPI_HandleTypeDef hspi3; // LCD
+
+
+/* Private variables ---------------------------------------------------------*/
 
 // LVGL
 lv_display_t *lcd_disp;
 volatile int lcd_bus_busy = 0;
-
 
 // RTOS
 osThreadId_t lvgl_task_handle;
@@ -89,7 +94,8 @@ XPT2046_ConnectionData cnt_touch = {
     .exti_irq = TOUCH_IRQ_EXTI_IRQn
 };
 
-/* Public variables ----------------------------------------------------------*/
+
+
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -266,6 +272,8 @@ void ui_init(lv_display_t *disp)
 	main_screen_create();
 	settings_screen_create();
 	select_channel_screen_create();
+	set_unit_screen_create();
+	set_target_screen_create();
 
 	// Set default values on display
 
@@ -287,7 +295,7 @@ void ui_init(lv_display_t *disp)
 	ui_update_ch1_run_btn_icon_settings(CHANNEL_STATE__STOPPED); // CH1 start stopped as default
 	ui_update_ch2_run_btn_icon_settings(CHANNEL_STATE__STOPPED); // CH2 start stopped as default
 
-	main_screen_load();
+	main_screen_load(SETTING_OPTION__NO_OPTION);
 
 
 #if DEBUG_TOUCH

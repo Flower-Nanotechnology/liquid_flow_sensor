@@ -1,7 +1,8 @@
 /*
  ******************************************************************************
- * @file           : settings_screen.h
- * @brief          : Settings screen creation, stylization and load functions
+ * @file           : set_flow_rate_screen.h
+ * @brief          : Set flow rate screen creation, stylization and
+ *                   load functions
  ******************************************************************************
  *
  * Author: Thiago Oliveira
@@ -10,9 +11,8 @@
  ******************************************************************************
  */
 
-
-#ifndef INCLUDE_SCREENS_SETTINGS_SCREEN_H_
-#define INCLUDE_SCREENS_SETTINGS_SCREEN_H_
+#ifndef INCLUDE_SCREENS_SET_FLOW_RATE_SCREEN_H_
+#define INCLUDE_SCREENS_SET_FLOW_RATE_SCREEN_H_
 
 
 #ifdef __cplusplus
@@ -25,12 +25,12 @@ extern "C" {
 
 
 /* Exported functions prototypes ---------------------------------------------*/
-void settings_screen_create(void);
-void settings_screen_load(int selected_setting_option);
+void set_flow_rate_screen_create(void);
+void set_flow_rate_screen_load(int selected_channel);
 
 
 #ifdef __cplusplus
 extern }
 #endif
 
-#endif /* INCLUDE_SCREENS_SETTINGS_SCREEN_H_ */
+#endif /* INCLUDE_SCREENS_SET_FLOW_RATE_SCREEN_H_ */

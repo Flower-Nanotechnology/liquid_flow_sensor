@@ -1,7 +1,7 @@
 /*
  ******************************************************************************
- * @file           : title_panel.c
- * @brief          : Title panel create function with stylization
+ * @file           : channel_panel.c
+ * @brief          : Channel panel create function with stylization
  ******************************************************************************
  *
  * Author: Thiago Oliveira
@@ -11,36 +11,35 @@
  */
 
 
-
 /* Private includes ----------------------------------------------------------*/
-#include "screens/panels/title_panel.h"
+#include "screens/panels/channel_panel.h"
 
 // Styles
 #include "styles/styles.h"
 
 
-/* Function implementation ---------------------------------------------------*/
+/* Function implementation ----------------------------------------------------*/
 
-void title_panel_create(title_panel_t * panel, lv_obj_t * parent)
+void channel_panel_create(channel_panel_t * panel, lv_obj_t * parent)
 {
 	/* =========================================
-	 *    PAGE TITLE
+	 *    PAGE CHANNEL
 	 * ========================================= */
 
-	/* PAGE TITLE BACKGROUND -----------------------------------------------------*/
+	/* PAGE CHANNEL BACKGROUND ---------------------------------------------------*/
 	panel->bg = lv_obj_create(parent);
 
 	lv_obj_remove_style_all(panel->bg);
 
-	lv_obj_set_size(panel->bg, 241, 23);
-	lv_obj_set_pos(panel->bg, 69, 10);
+	lv_obj_set_size(panel->bg, 241, 22);
+	lv_obj_set_pos(panel->bg, 69, 33);
 
 
-	/* PAGE TITLE LABEL ----------------------------------------------------------*/
+	/* PAGE CHANNEL LABEL --------------------------------------------------------*/
 	panel->label = lv_label_create(panel->bg);
 
 	lv_obj_remove_style_all(panel->label);
-	lv_obj_add_style(panel->label, &page_title_label_style, 0);
+	lv_obj_add_style(panel->label, &page_channel_label_style, 0);
 
 	lv_obj_center(panel->label);
 	lv_obj_align(panel->label, LV_ALIGN_TOP_RIGHT, 0, 0);
@@ -48,7 +47,8 @@ void title_panel_create(title_panel_t * panel, lv_obj_t * parent)
 }
 
 
-void title_panel_set_text(title_panel_t * panel, const char * text)
+void channel_panel_set_text(channel_panel_t * panel, const char * text)
 {
-    lv_label_set_text(panel->label, text);
+	lv_label_set_text(panel->label, text);
 }
+

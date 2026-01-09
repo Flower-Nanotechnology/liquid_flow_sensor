@@ -1,6 +1,6 @@
 /*
  ******************************************************************************
- * @file           : main_screen.h
+ * @file           : main_screen.c
  * @brief          : Main screen creation, stylization and load functions
  ******************************************************************************
  *
@@ -113,7 +113,7 @@ void main_screen_create(void)
 }
 
 
-void main_screen_load(void)
+void main_screen_load(int selected_setting_option)
 {
 	lv_screen_load(screen);
 }
@@ -708,7 +708,7 @@ static void settings_block_create(void)
 
 static void settings_btn_event_cb(lv_event_t * e)
 {
-	settings_screen_load();
+	settings_screen_load(SETTING_OPTION__NO_OPTION);
 }
 
 static void ch1_run_btn_event_cb(lv_event_t * e)

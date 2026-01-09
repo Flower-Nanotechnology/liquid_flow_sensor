@@ -34,8 +34,8 @@ lv_style_t back_btn_icon_bg_style;
 lv_style_t back_btn_icon_style;
 lv_style_t back_btn_text_style;
 
-lv_style_t simple_page_title_label_style;
-lv_style_t red_page_title_label_style;
+lv_style_t page_title_label_style;
+lv_style_t page_channel_label_style;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,8 +86,8 @@ static void back_btn_text_style_init(void);
  *    PAGE TITLE
  * ========================================= */
 
-static void simple_page_title_label_style_init(void);
-static void red_page_title_label_style_init(void);
+static void page_title_label_style_init(void);
+static void page_channel_label_style_init(void);
 
 
 
@@ -141,8 +141,8 @@ void styles_init()
 	 *    PAGE TITLE
 	 * ========================================= */
 
-	simple_page_title_label_style_init();
-	red_page_title_label_style_init();
+	page_title_label_style_init();
+	page_channel_label_style_init();
 }
 
 
@@ -319,18 +319,18 @@ static void back_btn_text_style_init(void)
  *    PAGE TITLE
  * ========================================= */
 
-static void simple_page_title_label_style_init(void)
+static void page_title_label_style_init(void)
 {
-	lv_style_init(&simple_page_title_label_style);
-	lv_style_set_text_font(&simple_page_title_label_style,  &lv_font_montserrat_20);
-	lv_style_set_text_color(&simple_page_title_label_style, lv_color_black());
-	lv_style_set_text_opa(&simple_page_title_label_style, LV_OPA_COVER);
+	lv_style_init(&page_title_label_style);
+	lv_style_set_text_font(&page_title_label_style,  &lv_font_montserrat_20);
+	lv_style_set_text_color(&page_title_label_style, lv_color_black());
+	lv_style_set_text_opa(&page_title_label_style, LV_OPA_COVER);
 }
 
-static void red_page_title_label_style_init(void)
+static void page_channel_label_style_init(void)
 {
-	lv_style_init(&red_page_title_label_style);
-	lv_style_set_text_font(&red_page_title_label_style,  &lv_font_montserrat_20);
-	lv_style_set_text_color(&red_page_title_label_style, lv_color_hex(RED));
-	lv_style_set_text_opa(&red_page_title_label_style, LV_OPA_COVER);
+	lv_style_init(&page_channel_label_style);
+	lv_style_set_text_font(&page_channel_label_style,  &lv_font_montserrat_14);
+	lv_style_set_text_color(&page_channel_label_style, lv_color_hex(RED));
+	lv_style_set_text_opa(&page_channel_label_style, LV_OPA_COVER);
 }

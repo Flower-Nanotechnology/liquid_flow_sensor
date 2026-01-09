@@ -1,6 +1,6 @@
 /*
  ******************************************************************************
- * @file           : select_channel_screen.h
+ * @file           : select_channel_screen.c
  * @brief          : Select channel creation, stylization and load functions
  ******************************************************************************
  *
@@ -16,6 +16,9 @@
 
 // Screens
 #include "screens/settings_screen.h"
+#include "screens/set_unit_screen.h"
+#include "screens/set_target_screen.h"
+#include "screens/set_flow_rate_screen.h"
 
 // Styles
 #include "styles/styles.h"
@@ -33,10 +36,14 @@
 /* Private variables ---------------------------------------------------------*/
 static lv_obj_t * screen;
 
+// Page title panel
+static title_panel_t title;
 
 // Option buttons
 static lv_obj_t * ch1_btn_bg,  * ch1_btn_label,
 			    * ch2_btn_bg,  * ch2_btn_label;
+
+
 
 /* Private function prototypes -----------------------------------------------*/
 static void set_unit_screen_load_cb(lv_event_t * e);
@@ -55,14 +62,14 @@ void select_channel_screen_create(void)
 	 *    BACK BUTTON
 	 * ========================================= */
 
-	back_btn_create(screen, settings_screen_load);
+	back_btn_create(screen, settings_screen_load, SETTING_OPTION__NO_OPTION);
 
 
 	/* =========================================
 	 *   PAGE TITLE
 	 * ========================================= */
 
-	title_panel_create(screen);
+	title_panel_create(&title, screen);
 
 
 	/* =========================================
@@ -74,8 +81,8 @@ void select_channel_screen_create(void)
 
 	lv_obj_add_style(ch1_btn_bg, &blue_btn_bg_style, 0);
 
-	lv_obj_set_size(ch1_btn_bg, 300, 65);
-	lv_obj_set_pos(ch1_btn_bg, 10, 90);
+	lv_obj_set_size(ch1_btn_bg, 300, 72);
+	lv_obj_set_pos(ch1_btn_bg, 10, 75);
 
 
 	/* CHANNEL 1 BUTTON LABEL ----------------------------------------------------*/
@@ -93,8 +100,8 @@ void select_channel_screen_create(void)
 
 	lv_obj_add_style(ch2_btn_bg, &blue_btn_bg_style, 0);
 
-	lv_obj_set_size(ch2_btn_bg, 300, 65);
-	lv_obj_set_pos(ch2_btn_bg, 10, 162);
+	lv_obj_set_size(ch2_btn_bg, 300, 72);
+	lv_obj_set_pos(ch2_btn_bg, 10, 158);
 
 
 	/* CHANNEL 2 BUTTON LABEL ----------------------------------------------------*/
@@ -112,21 +119,21 @@ void select_channel_screen_load(int selected_setting_option)
 {
 	if (selected_setting_option == SETTING_OPTION__SET_UNIT)
 	{
-		ui_update_page_title_label("SET UNIT");
+		title_panel_set_text(&title, "SET UNIT");
 
 		lv_obj_add_event_cb(ch1_btn_bg, set_unit_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_unit_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
 	}
 	else if (selected_setting_option == SETTING_OPTION__SET_TARGET)
 	{
-		ui_update_page_title_label("SET TARGET");
+		title_panel_set_text(&title, "SET TARGET");
 
 		lv_obj_add_event_cb(ch1_btn_bg, set_target_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_target_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
 	}
 	else if (selected_setting_option == SETTING_OPTION__SET_FLOW_RATE)
 	{
-		ui_update_page_title_label("SET FLOW RATE");
+		title_panel_set_text(&title, "SET FLOW RATE");
 
 		lv_obj_add_event_cb(ch1_btn_bg, set_flow_rate_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH1);
 		lv_obj_add_event_cb(ch2_btn_bg, set_flow_rate_screen_load_cb, LV_EVENT_CLICKED, (void *)CHANNEL__CH2);
@@ -151,11 +158,11 @@ static void set_unit_screen_load_cb(lv_event_t * e)
 
 	if(channel == CHANNEL__CH1)
 	{
-		// TODO
+		set_unit_screen_load(CHANNEL__CH1);
 	}
 	else if(channel == CHANNEL__CH2)
 	{
-		// TODO
+		set_unit_screen_load(CHANNEL__CH2);
 	}
 }
 
@@ -165,11 +172,11 @@ static void set_target_screen_load_cb(lv_event_t * e)
 
 	if(channel == CHANNEL__CH1)
 	{
-		// TODO
+		set_target_screen_load(CHANNEL__CH1);
 	}
 	else if(channel == CHANNEL__CH2)
 	{
-		// TODO
+		set_target_screen_load(CHANNEL__CH2);
 	}
 }
 
@@ -179,10 +186,10 @@ static void set_flow_rate_screen_load_cb(lv_event_t * e)
 
 	if(channel == CHANNEL__CH1)
 	{
-		// TODO
+		set_flow_rate_screen_load(CHANNEL__CH1);
 	}
 	else if(channel == CHANNEL__CH2)
 	{
-		// TODO
+		set_flow_rate_screen_load(CHANNEL__CH2);
 	}
 }

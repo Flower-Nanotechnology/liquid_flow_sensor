@@ -1,6 +1,6 @@
 /*
  ******************************************************************************
- * @file           : settings_screen.h
+ * @file           : settings_screen.c
  * @brief          : Settings screen creation, stylization and load functions
  ******************************************************************************
  *
@@ -34,6 +34,8 @@
 /* Private variables ---------------------------------------------------------*/
 static lv_obj_t * screen;
 
+// Page title panel
+static title_panel_t title;
 
 // Option buttons
 static lv_obj_t * set_unit_btn_bg,         * set_unit_btn_label,
@@ -58,15 +60,15 @@ void settings_screen_create(void)
 	 *    BACK BUTTON
 	 * ========================================= */
 
-	back_btn_create(screen, main_screen_load);
+	back_btn_create(screen, main_screen_load, SETTING_OPTION__NO_OPTION);
 
 
 	/* =========================================
 	 *    PAGE TITLE
 	 * ========================================= */
 
-	title_panel_create(screen);
-	ui_update_page_title_label("SETTINGS");
+	title_panel_create(&title, screen);
+	title_panel_set_text(&title, "SETTINGS");
 
 
 	/* =========================================
@@ -79,8 +81,8 @@ void settings_screen_create(void)
 
 	lv_obj_add_style(set_unit_btn_bg, &blue_btn_bg_style, 0);
 
-	lv_obj_set_size(set_unit_btn_bg, 300, 48);
-	lv_obj_set_pos(set_unit_btn_bg, 10, 67);
+	lv_obj_set_size(set_unit_btn_bg, 300, 45);
+	lv_obj_set_pos(set_unit_btn_bg, 10, 75);
 
 
 	/* UNIT SELECTION LABEL ------------------------------------------------------*/
@@ -99,8 +101,8 @@ void settings_screen_create(void)
 
 	lv_obj_add_style(set_target_btn_bg, &blue_btn_bg_style, 0);
 
-	lv_obj_set_size(set_target_btn_bg, 300, 48);
-	lv_obj_set_pos(set_target_btn_bg, 10, 122);
+	lv_obj_set_size(set_target_btn_bg, 300, 45);
+	lv_obj_set_pos(set_target_btn_bg, 10, 130);
 
 
 	/* SET TARGET LABEL ----------------------------------------------------------*/
@@ -119,8 +121,8 @@ void settings_screen_create(void)
 
 	lv_obj_add_style(set_flow_rate_btn_bg, &blue_btn_bg_style, 0);
 
-	lv_obj_set_size(set_flow_rate_btn_bg, 300, 48);
-	lv_obj_set_pos(set_flow_rate_btn_bg, 10, 177);
+	lv_obj_set_size(set_flow_rate_btn_bg, 300, 45);
+	lv_obj_set_pos(set_flow_rate_btn_bg, 10, 185);
 
 
 	/* FLOW RATE LABEL -----------------------------------------------------------*/
@@ -134,7 +136,7 @@ void settings_screen_create(void)
 }
 
 
-void settings_screen_load(void)
+void settings_screen_load(int selected_setting_option)
 {
 	lv_screen_load(screen);
 }

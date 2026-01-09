@@ -43,8 +43,8 @@ extern lv_style_t back_btn_icon_bg_style;
 extern lv_style_t back_btn_icon_style;
 extern lv_style_t back_btn_text_style;
 
-extern lv_style_t simple_page_title_label_style;
-extern lv_style_t red_page_title_label_style;
+extern lv_style_t page_title_label_style;
+extern lv_style_t page_channel_label_style;
 
 
 /* Exported function prototypes ----------------------------------------------*/

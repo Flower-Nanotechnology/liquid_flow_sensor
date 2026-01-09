@@ -1,7 +1,7 @@
 /*
  ******************************************************************************
- * @file           : title_panel.h
- * @brief          : Title panel create function with stylization
+ * @file           : channel_panel.h
+ * @brief          : Channel panel create function with stylization
  ******************************************************************************
  *
  * Author: Thiago Oliveira
@@ -10,8 +10,8 @@
  ******************************************************************************
  */
 
-#ifndef INCLUDE_SCREENS_PANELS_TITLE_PANEL_H_
-#define INCLUDE_SCREENS_PANELS_TITLE_PANEL_H_
+#ifndef INCLUDE_SCREENS_PANELS_TITLE_PANEL_WITH_CHANNEL_H_
+#define INCLUDE_SCREENS_PANELS_TITLE_PANEL_WITH_CHANNEL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,17 +26,16 @@ extern "C" {
 typedef struct {
     lv_obj_t * bg;
     lv_obj_t * label;
-} title_panel_t;
+} channel_panel_t;
 
 
 /* Exported function prototypes ----------------------------------------------*/
-void title_panel_create(title_panel_t * panel, lv_obj_t * parent);
-void title_panel_set_text(title_panel_t * panel, const char * text);
-
+void channel_panel_create(channel_panel_t * panel, lv_obj_t * parent);
+void channel_panel_set_text(channel_panel_t * panel, const char * text);
 
 
 #ifdef __cplusplus
 extern }
 #endif
 
-#endif /* INCLUDE_SCREENS_PANELS_TITLE_PANEL_H_ */
+#endif /* INCLUDE_SCREENS_PANELS_TITLE_PANEL_WITH_CHANNEL_H_ */
