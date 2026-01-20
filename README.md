@@ -6,7 +6,7 @@
 
 1. Clone the project in your workspace
 ```bash
-git clone https://github.com/Flower-Nanotechnology/template_simple_gpio.git
+git clone https://github.com/Flower-Nanotechnology/liquid_flow_sensor.git
 ```
 
 2. Import on STM32CubeIDE
