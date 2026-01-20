@@ -1,7 +1,3 @@
-# STM32CubeIDE template project
-
-- Simple GPIO with RTOS template project for STM32CubeIDE without .ioc settings
-
 ## How to import
 
 1. Clone the project in your workspace
