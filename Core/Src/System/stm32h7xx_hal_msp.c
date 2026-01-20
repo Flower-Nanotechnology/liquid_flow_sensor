@@ -54,56 +54,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-	if(hspi->Instance==SPI1)
-	{
-		// Initializes the peripherals clock
-		PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI1;
-		PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
-
-		if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-		{
-		  Error_Handler();
-		}
-
-		// Peripheral clock enable
-		__HAL_RCC_SPI1_CLK_ENABLE();
-		__HAL_RCC_GPIOA_CLK_ENABLE();
-
-
-		// SPI3 GPIO Configuration
-		//     PA5 ------> SPI1_SCK
-		GPIO_InitStruct = (GPIO_InitTypeDef) {
-			.Pin = TOUCH_SCK_Pin,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_PULLDOWN,
-			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-			.Alternate = GPIO_AF5_SPI1,
-		};
-		HAL_GPIO_Init(TOUCH_SCK_GPIO_Port, &GPIO_InitStruct);
-
-		// SPI3 GPIO Configuration
-		//     PA6 ------> SPI1_MISO
-		GPIO_InitStruct = (GPIO_InitTypeDef) {
-			.Pin = TOUCH_SDO_Pin,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-			.Alternate = GPIO_AF5_SPI1,
-		};
-		HAL_GPIO_Init(TOUCH_SDO_GPIO_Port, &GPIO_InitStruct);
-
-		// SPI3 GPIO Configuration
-		//     PA7 ------> SPI1_MOSI
-		GPIO_InitStruct = (GPIO_InitTypeDef) {
-			.Pin = TOUCH_SDI_Pin,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_PULLUP,
-			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-			.Alternate = GPIO_AF5_SPI1,
-		};
-		HAL_GPIO_Init(TOUCH_SDI_GPIO_Port, &GPIO_InitStruct);
-	}
-	else if(hspi->Instance==SPI3)
+	if(hspi->Instance==SPI3)
 	{
 		// Initializes the peripherals clock
 		PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI3;
@@ -175,21 +126,6 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 {
-	if(hspi->Instance==SPI1)
-	{
-		// Peripheral clock disable
-		__HAL_RCC_SPI1_CLK_DISABLE();
-
-		//	PA5  ------> SPI1_SCK
-		HAL_GPIO_DeInit(GPIOA, TOUCH_SCK_Pin);
-
-		//	PA6  ------> SPI1_MISO
-		HAL_GPIO_DeInit(GPIOA, TOUCH_SDO_Pin);
-
-		//	PA7  ------> SPI1_MOSI
-		HAL_GPIO_DeInit(GPIOA, TOUCH_SDI_Pin);
-
-	}
 	if(hspi->Instance==SPI3)
 	{
 		// Peripheral clock disable

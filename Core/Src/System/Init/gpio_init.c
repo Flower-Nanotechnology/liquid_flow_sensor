@@ -77,35 +77,6 @@ static void MX_GPIO_Init(void)
 		.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
 	};
 	HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);
-
-
-	// ---------------------------------------
-	//     TOUCH DISPLAY
-	// ---------------------------------------
-
-	// Configure GPIO pin Output Level
-	HAL_GPIO_WritePin(GPIOE, TOUCH_CS_Pin, GPIO_PIN_SET);
-
-	// Configure GPIO pin : TOUCH_CS_Pin
-	GPIO_InitStruct = (GPIO_InitTypeDef){
-		.Pin = TOUCH_CS_Pin,
-		.Mode = GPIO_MODE_OUTPUT_PP,
-		.Pull = GPIO_PULLUP,
-		.Speed = GPIO_SPEED_FREQ_LOW,
-	};
-	HAL_GPIO_Init(TOUCH_CS_GPIO_Port, &GPIO_InitStruct);
-
-	// Configure GPIO pin : TOUCH_IRQ_Pin
-	GPIO_InitStruct = (GPIO_InitTypeDef){
-		.Pin = TOUCH_IRQ_Pin,
-		.Mode = GPIO_MODE_IT_FALLING,
-		.Pull = GPIO_PULLUP,
-	};
-	HAL_GPIO_Init(TOUCH_IRQ_GPIO_Port, &GPIO_InitStruct);
-
-
-	HAL_NVIC_SetPriority(TOUCH_IRQ_EXTI_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(TOUCH_IRQ_EXTI_IRQn);
 }
 
 

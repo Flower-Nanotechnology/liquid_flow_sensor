@@ -15,11 +15,12 @@
 
 
 // GREY
-#define MAIN_GREY      0x9E9E9E
-#define SECONDARY_GREY 0XD9D9D9
+#define PRIMARY_GREY      0xD9D9D9
+#define SECONDARY_GREY    0X9E9E9E
 
 // BLUE
-#define BLUE      0x1D3F78
+#define PRIMARY_BLUE      0x1D3F78
+#define SECONDARY_BLUE    0x07214C
 
 // RED
 #define RED       0xF30000

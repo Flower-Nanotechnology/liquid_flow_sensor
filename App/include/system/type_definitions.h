@@ -24,22 +24,6 @@ typedef enum {
 } channel_t;
 
 
-/* CHANNEL STATE -----------------------------------------------------------------*/
-typedef enum {
-	CHANNEL_STATE__RUNNING = 0,
-	CHANNEL_STATE__STOPPED = 1
-} channel_state_t;
-
-
-/* SETTING OPTION ----------------------------------------------------------------*/
-typedef enum {
-	SETTING_OPTION__NO_OPTION = 0,
-	SETTING_OPTION__SET_UNIT = 1,
-	SETTING_OPTION__SET_TARGET = 2,
-	SETTING_OPTION__SET_FLOW_RATE = 3
-} setting_option_t;
-
-
 /* UNIT --------------------------------------------------------------------------*/
 typedef enum {
 	// per hour
