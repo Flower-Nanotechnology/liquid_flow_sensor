@@ -21,12 +21,17 @@ extern "C" {
 #include "lvgl.h"
 
 /* Private variables ---------------------------------------------------------*/
+
 extern lv_style_t primary_blue_bg_style;
 extern lv_style_t secondary_blue_bg_style;
 extern lv_style_t primary_grey_bg_style;
+extern lv_style_t green_bg_style;
+extern lv_style_t red_bg_style;
 
-extern lv_style_t title_label_style;
-extern lv_style_t flow_rate_label_style;
+extern lv_style_t primary_grey_with_stroke_bg_style;
+
+extern lv_style_t white_text_style;
+extern lv_style_t black_text_style;
 
 
 

@@ -22,8 +22,8 @@
 extern SPI_HandleTypeDef hspi3;
 
 // LVGL
-extern lv_display_t *lcd_disp;
-extern volatile int lcd_bus_busy;
+extern lv_display_t * lcd_disp;
+volatile int lcd_bus_busy = 0;
 
 
 
@@ -116,19 +116,6 @@ void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uin
 		// DCX high (data)
 		HAL_GPIO_WritePin(LCD_DCX_GPIO_Port, LCD_DCX_Pin, GPIO_PIN_SET);
 
-		// Clear cache
-		// SCB_CleanDCache_by_Addr((uint32_t *)param, param_size);
-		// No seu arquivo de callbacks:
-//		if (param_size > 0 && param != NULL) {
-//		    // Calcula o endereço inicial alinhado para baixo (múltiplo de 32)
-//		    uint32_t aligned_addr = (uint32_t)param & ~0x1F;
-//		    // Calcula o tamanho total cobrindo o resto do desalinhamento
-//		    uint32_t aligned_size = (param_size + ((uint32_t)param & 0x1F) + 31) & ~0x1F;
-//
-//		    SCB_CleanDCache_by_Addr((uint32_t *)aligned_addr, aligned_size);
-//		}
-
-		// (for color data use DMA transfer)
 		// Set the SPI in 16-bit mode to match endianess
 		hspi3.Init.DataSize = SPI_DATASIZE_16BIT;
 		HAL_SPI_Init(&hspi3);
@@ -138,7 +125,5 @@ void lcd_send_color(lv_display_t *disp, const uint8_t *cmd, size_t cmd_size, uin
 
 		// Transmit
 		HAL_SPI_Transmit_DMA(&hspi3, param, (uint16_t)param_size / 2);
-
-		// NOTE: CS will be reset in the transfer ready callback
 	}
 }

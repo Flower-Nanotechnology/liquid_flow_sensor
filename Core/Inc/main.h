@@ -72,6 +72,13 @@ extern "C" {
 #define TOUCH_IRQ_GPIO_Port GPIOC
 #define TOUCH_IRQ_EXTI_IRQn EXTI9_5_IRQn
 
+// Hardware localization: SENSOR PINS
+#define SENSOR_SDA_Pin GPIO_PIN_0
+#define SENSOR_SDA_GPIO_Port GPIOF
+
+#define SENSOR_SCL_Pin GPIO_PIN_1
+#define SENSOR_SCL_GPIO_Port GPIOF
+
 
 // ILI9341 driver callbacks
 #define  BUS_SPI3_POLL_TIMEOUT  0x1000U

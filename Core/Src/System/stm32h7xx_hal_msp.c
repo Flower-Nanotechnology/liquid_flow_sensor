@@ -43,6 +43,10 @@ void HAL_MspInit(void)
 }
 
 
+/* =========================================
+ *    SPI
+ * ========================================= */
+
 /**
   * @brief SPI MSP Initialization
   * This function configures the hardware resources
@@ -57,8 +61,10 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 	if(hspi->Instance==SPI3)
 	{
 		// Initializes the peripherals clock
-		PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI3;
-		PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
+		PeriphClkInitStruct = (RCC_PeriphCLKInitTypeDef) {
+			.PeriphClockSelection = RCC_PERIPHCLK_SPI3,
+			.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL
+		};
 
 		if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
 		{
@@ -143,5 +149,90 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 	    // SPI3 interrupt DeInit
 	    HAL_NVIC_DisableIRQ(SPI3_IRQn);
 
+	}
+}
+
+
+
+/* =========================================
+ *    I2C
+ * ========================================= */
+
+/**
+  * @brief I2C MSP Initialization
+  * This function configures the hardware resources used in this example
+  * @param hi2c: I2C handle pointer
+  * @retval None
+  */
+void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
+{
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+	if(hi2c->Instance==I2C2)
+	{
+
+		// Initializes the peripherals clock
+		PeriphClkInitStruct = (RCC_PeriphCLKInitTypeDef) {
+			.PeriphClockSelection = RCC_PERIPHCLK_I2C2,
+			.I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1
+		};
+
+		if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+		{
+			Error_Handler();
+		}
+
+		// GPIO clock enable
+		__HAL_RCC_GPIOF_CLK_ENABLE();
+
+		// I2C GPIO Configuration
+		//     PF0 ------> I2C2_SDA
+		GPIO_InitStruct = (GPIO_InitTypeDef) {
+			.Pin = SENSOR_SDA_Pin,
+			.Mode = GPIO_MODE_AF_OD,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+			.Alternate = GPIO_AF4_I2C2
+		};
+		HAL_GPIO_Init(SENSOR_SDA_GPIO_Port, &GPIO_InitStruct);
+
+		// I2C GPIO Configuration
+		//     PF1 ------> I2C2_SCL
+		GPIO_InitStruct = (GPIO_InitTypeDef) {
+			.Pin = SENSOR_SCL_Pin,
+			.Mode = GPIO_MODE_AF_OD,
+			.Pull = GPIO_PULLUP,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+			.Alternate = GPIO_AF4_I2C2
+		};
+		HAL_GPIO_Init(SENSOR_SCL_GPIO_Port, &GPIO_InitStruct);
+
+		// Peripheral clock enable
+		__HAL_RCC_I2C2_CLK_ENABLE();
+
+
+	}
+
+}
+
+/**
+  * @brief I2C MSP De-Initialization
+  * This function freeze the hardware resources used in this example
+  * @param hi2c: I2C handle pointer
+  * @retval None
+  */
+void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
+{
+	if(hi2c->Instance==I2C2)
+	{
+		// Peripheral clock disable
+		__HAL_RCC_I2C2_CLK_DISABLE();
+
+		//	PF0  ------> I2C2_SDA
+		HAL_GPIO_DeInit(SENSOR_SDA_GPIO_Port, SENSOR_SDA_Pin);
+
+		//	PF1  ------> I2C2_SCL
+		HAL_GPIO_DeInit(SENSOR_SCL_GPIO_Port, SENSOR_SCL_Pin);
 	}
 }

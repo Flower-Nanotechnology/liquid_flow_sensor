@@ -39,6 +39,7 @@ static void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOD_CLK_ENABLE(); // D
 	__HAL_RCC_GPIOE_CLK_ENABLE(); // E
 	__HAL_RCC_GPIOG_CLK_ENABLE(); // G
+	__HAL_RCC_GPIOF_CLK_ENABLE(); // F - I2C2
 
 	// ---------------------------------------
 	//     LCD DISPLAY

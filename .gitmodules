@@ -1,3 +1,6 @@
 [submodule "Middlewares/Third_Party/LVGL/lvgl"]
 	path = Middlewares/Third_Party/LVGL/lvgl
 	url = https://github.com/lvgl/lvgl.git
+[submodule "Middlewares/Third_Party/SF06-LF-I2C"]
+	path = Middlewares/Third_Party/SF06-LF-I2C
+	url = git@github.com:Flower-Nanotechnology/SF06-LF-I2C.git

@@ -27,6 +27,10 @@ extern "C" {
 void main_screen_create(void);
 void main_screen_load();
 
+void set_high_flow_state_on_display(int state);
+void set_air_in_line_state_on_display(int state);
+void set_flow_rate_on_display(char * value);
+
 
 #ifdef __cplusplus
 extern }

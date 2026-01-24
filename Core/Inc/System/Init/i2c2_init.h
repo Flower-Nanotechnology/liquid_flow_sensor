@@ -1,17 +1,17 @@
 /*
  ******************************************************************************
- * @file           : spi1_init.h
- * @brief          : Function prototype of wrapper to init SPI1
+ * @file           : i2c2_init.h
+ * @brief          : Function prototype of wrapper to init I2C2
  ******************************************************************************
  *
  * Author: Thiago Oliveira
- *   Date: December, 2025
+ *   Date: January, 2026
  *
  ******************************************************************************
  */
 
-#ifndef INC_SYSTEM_INIT_SPI1_INIT_H_
-#define INC_SYSTEM_INIT_SPI1_INIT_H_
+#ifndef INC_SYSTEM_INIT_I2C2_INIT_H_
+#define INC_SYSTEM_INIT_I2C2_INIT_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,12 +19,11 @@ extern "C" {
 
 
 /* Exported functions prototypes ---------------------------------------------*/
-void spi1_init_wrapper(void);
+void i2c2_init_wrapper(void);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* INC_SYSTEM_INIT_SPI1_INIT_H_ */
-
+#endif /* INC_SYSTEM_INIT_I2C2_INIT_H_ */

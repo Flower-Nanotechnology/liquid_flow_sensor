@@ -16,7 +16,8 @@
 #include "screens/main_screen.h"
 
 #include "styles/styles.h"
-#include "styles/colors.h"
+#include "styles/fonts.h"
+
 #include "system/type_definitions.h"
 
 
@@ -30,170 +31,22 @@ static lv_obj_t * screen;
  * ========================================= */
 
 // Title panel
-static lv_obj_t * title_bg, * title_label;
+static lv_obj_t * page_title_bg, * page_title_label;
 
-// CH1 block
-static lv_obj_t * ch1_name_bg,   * ch1_name_label,
-				* ch1_value_bg,  * ch1_value_label,
-				* ch1_unit_bg,   * ch1_unit_label;
+// Flow rate visualization panel
+static lv_obj_t * flow_rate_bg,
+				* value_bg,      * value_label,
+				* unit_bg,       * unit_label;
 
-// CH2 block
-static lv_obj_t * ch2_name_bg,   * ch2_name_label,
-				* ch2_value_bg,  * ch2_value_label,
-				* ch2_unit_bg,   * ch2_unit_label;
+// Warnings panel
+static lv_obj_t * warnings_title_bg,  * warnings_title_label,
 
+				* high_flow_text_bg,   * high_flow_text_label,
+				* high_flow_result_bg, * high_flow_result_label,
 
+				* air_text_bg,        * air_text_label,
+				* air_result_bg,      * air_result_label;
 
-
-/* Private function prototypes -----------------------------------------------*/
-
-// Button callbacks
-//static void settings_btn_event_cb(lv_event_t * e);
-
-// Setters
-void set_ch2_flow_rate(const char * flow_rate);
-void set_ch2_flow_rate(const char * flow_rate);
-
-
-
-void main_screen_create(void)
-{
-	screen = lv_obj_create(NULL);
-
-
-	/* TITLE BACKGROUND ----------------------------------------------------------*/
-	title_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(title_bg);
-	lv_obj_add_style(title_bg, &secondary_blue_bg_style, 0);
-
-	lv_obj_set_size(title_bg, 300, 28);
-	lv_obj_set_pos(title_bg, 10, 10);
-
-
-	/* TITLE LABEL ---------------------------------------------------------------*/
-	title_label = lv_label_create(title_bg);
-	lv_obj_remove_style_all(title_label);
-	lv_obj_add_style(title_label, &title_label_style, 0);
-
-	lv_label_set_text(title_label, "LIQUID FLOW SENSOR");
-	lv_obj_set_style_text_font(title_label, &lv_font_montserrat_14, 0);
-	lv_obj_center(title_label);
-
-
-	/* CH1 NAME BACKGROUND -------------------------------------------------------*/
-	ch1_name_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch1_name_bg);
-	lv_obj_add_style(ch1_name_bg, &primary_blue_bg_style, 0);
-
-	lv_obj_set_size(ch1_name_bg, 48, 59);
-	lv_obj_set_pos(ch1_name_bg, 10, 48);
-
-
-	/* CH1 NAME LABEL ------------------------------------------------------------*/
-	ch1_name_label = lv_label_create(ch1_name_bg);
-	lv_obj_remove_style_all(ch1_name_label);
-	lv_obj_add_style(ch1_name_label, &title_label_style, 0);
-
-	lv_label_set_text(ch1_name_label, "CH1");
-	lv_obj_set_style_text_font(ch1_name_label, &lv_font_montserrat_14, 0);
-	lv_obj_center(ch1_name_label);
-
-
-	/* CH1 VALUE BACKGROUND ------------------------------------------------------*/
-	ch1_value_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch1_value_bg);
-	lv_obj_add_style(ch1_value_bg, &primary_grey_bg_style, 0);
-
-	lv_obj_set_size(ch1_value_bg, 157, 59);
-	lv_obj_set_pos(ch1_value_bg, 63, 48);
-
-
-	/* CH1 VALUE LABEL -----------------------------------------------------------*/
-	ch1_value_label = lv_label_create(ch1_value_bg);
-	lv_obj_remove_style_all(ch1_value_label);
-	lv_obj_add_style(ch1_value_label, &flow_rate_label_style, 0);
-
-	lv_label_set_text(ch1_value_label, "0000.0000");
-	lv_obj_set_style_text_font(ch1_value_label, &lv_font_montserrat_20, 0);
-	lv_obj_center(ch1_value_label);
-
-
-	/* CH1 UNIT BACKGROUND -------------------------------------------------------*/
-	ch1_unit_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch1_unit_bg);
-	lv_obj_add_style(ch1_unit_bg, &primary_grey_bg_style, 0);
-
-	lv_obj_set_size(ch1_unit_bg, 90, 59);
-	lv_obj_set_pos(ch1_unit_bg, 220, 48);
-
-
-	/* CH1 UNIT LABEL ------------------------------------------------------------*/
-	ch1_unit_label = lv_label_create(ch1_unit_bg);
-	lv_obj_remove_style_all(ch1_unit_label);
-	lv_obj_add_style(ch1_unit_label, &flow_rate_label_style, 0);
-
-	lv_label_set_text(ch1_unit_label, "uL/min");
-	lv_obj_set_style_text_font(ch1_unit_label, &lv_font_montserrat_20, 0);
-	lv_obj_center(ch1_unit_label);
-
-
-
-	/* CH2 NAME BACKGROUND -------------------------------------------------------*/
-	ch2_name_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch2_name_bg);
-	lv_obj_add_style(ch2_name_bg, &primary_blue_bg_style, 0);
-
-	lv_obj_set_size(ch2_name_bg, 48, 59);
-	lv_obj_set_pos(ch2_name_bg, 10, 117);
-
-
-	/* CH2 NAME LABEL ------------------------------------------------------------*/
-	ch2_name_label = lv_label_create(ch2_name_bg);
-	lv_obj_remove_style_all(ch2_name_label);
-	lv_obj_add_style(ch2_name_label, &title_label_style, 0);
-
-	lv_label_set_text(ch2_name_label, "CH2");
-	lv_obj_set_style_text_font(ch2_name_label, &lv_font_montserrat_14, 0);
-	lv_obj_center(ch2_name_label);
-
-
-	/* CH2 VALUE BACKGROUND ------------------------------------------------------*/
-	ch2_value_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch2_value_bg);
-	lv_obj_add_style(ch2_value_bg, &primary_grey_bg_style, 0);
-
-	lv_obj_set_size(ch2_value_bg, 157, 59);
-	lv_obj_set_pos(ch2_value_bg, 63, 117);
-
-
-	/* CH2 VALUE LABEL -----------------------------------------------------------*/
-	ch2_value_label = lv_label_create(ch2_value_bg);
-	lv_obj_remove_style_all(ch2_value_label);
-	lv_obj_add_style(ch2_value_label, &flow_rate_label_style, 0);
-
-	lv_label_set_text(ch2_value_label, "0000.0000");
-	lv_obj_set_style_text_font(ch2_value_label, &lv_font_montserrat_20, 0);
-	lv_obj_center(ch2_value_label);
-
-
-	/* CH2 UNIT BACKGROUND -------------------------------------------------------*/
-	ch2_unit_bg = lv_obj_create(screen);
-	lv_obj_remove_style_all(ch2_unit_bg);
-	lv_obj_add_style(ch2_unit_bg, &primary_grey_bg_style, 0);
-
-	lv_obj_set_size(ch2_unit_bg, 90, 59);
-	lv_obj_set_pos(ch2_unit_bg, 220, 117);
-
-
-	/* CH2 UNIT LABEL ------------------------------------------------------------*/
-	ch2_unit_label = lv_label_create(ch2_unit_bg);
-	lv_obj_remove_style_all(ch2_unit_label);
-	lv_obj_add_style(ch2_unit_label, &flow_rate_label_style, 0);
-
-	lv_label_set_text(ch2_unit_label, "uL/min");
-	lv_obj_set_style_text_font(ch2_unit_label, &lv_font_montserrat_20, 0);
-	lv_obj_center(ch2_unit_label);
-}
 
 
 void main_screen_load()
@@ -202,35 +55,232 @@ void main_screen_load()
 }
 
 
+void main_screen_create(void)
+{
+	screen = lv_obj_create(NULL);
 
 
-///* EVENT CALLBACK FUNCTIONS ------------------------------------------------------*/
-//
-//static void settings_btn_event_cb(lv_event_t * e)
-//{
-//	// settings_screen_load(SETTING_OPTION__NO_OPTION);
-//}
+	// ===================================
+	//     TITLE
+	// ===================================
+
+	/* TITLE BACKGROUND ----------------------------------------------------------*/
+	page_title_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(page_title_bg);
+	lv_obj_add_style(page_title_bg, &secondary_blue_bg_style, 0);
+
+	lv_obj_set_size(page_title_bg, 220, 57);
+	lv_obj_set_pos(page_title_bg, 10, 10);
 
 
-///* SETTER FUNCTIONS --------------------------------------------------------------*/
-//
-//void set_ch1_flow_rate(const char * flow_rate)
-//{
-//    if(ch1_flow_rate_label != NULL) // Check if ch1_flow_rate_label obj has been initialized
-//    {
-//        lv_label_set_text(ch1_flow_rate_label, flow_rate); // Change the text
-//    }
-//}
-//
-//
-//void set_ch2_flow_rate(const char * flow_rate)
-//{
-//    if(ch2_flow_rate_label != NULL) // Check if ch1_flow_rate_label obj has been initialized
-//    {
-//        lv_label_set_text(ch2_flow_rate_label, flow_rate); // Change the text
-//    }
-//}
+	/* TITLE LABEL ---------------------------------------------------------------*/
+	page_title_label = lv_label_create(page_title_bg);
+	lv_obj_remove_style_all(page_title_label);
+	lv_obj_add_style(page_title_label, &white_text_style, 0);
 
+	lv_label_set_text(page_title_label, "LIQUID FLOW SENSOR");
+	lv_obj_set_style_text_font(page_title_label, &montserrat_bold_20, 0);
+
+	lv_obj_set_width(page_title_label, 220);
+	lv_label_set_long_mode(page_title_label, LV_LABEL_LONG_WRAP);
+	lv_obj_set_style_text_align(page_title_label, LV_TEXT_ALIGN_CENTER, 0);
+
+	lv_obj_center(page_title_label);
+
+
+	// ===================================
+	//     FLOW RATE PANEL
+	// ===================================
+
+	/* FLOW RATE BACKGROUND ------------------------------------------------------*/
+	flow_rate_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(flow_rate_bg);
+	lv_obj_add_style(flow_rate_bg, &primary_grey_with_stroke_bg_style, 0);
+
+	lv_obj_set_size(flow_rate_bg, 220, 91);
+	lv_obj_set_pos(flow_rate_bg, 10, 77);
+
+
+	/* FLOW RATE VALUE BACKGROUND ------------------------------------------------*/
+	value_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(value_bg);
+
+	lv_obj_set_size(value_bg, 135, 85);
+	lv_obj_set_pos(value_bg, 13, 80);
+
+
+	/* FLOW RATE VALUE LABEL -----------------------------------------------------*/
+	value_label = lv_label_create(value_bg);
+	lv_obj_remove_style_all(value_label);
+	lv_obj_add_style(value_label, &black_text_style, 0);
+
+	lv_label_set_text(value_label, "00.0");
+	lv_obj_set_style_text_font(value_label, &montserrat_bold_26, 0);
+	lv_obj_center(value_label);
+
+
+	/* FLOW RATE UNIT BACKGROUND -------------------------------------------------*/
+	unit_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(unit_bg);
+
+	lv_obj_set_size(unit_bg, 59, 76);
+	lv_obj_set_pos(unit_bg, 133, 89);
+
+
+	/* FLOW RATE UNIT LABEL ------------------------------------------------------*/
+	unit_label = lv_label_create(unit_bg);
+	lv_obj_remove_style_all(unit_label);
+	lv_obj_add_style(unit_label, &black_text_style, 0);
+
+	lv_label_set_text(unit_label, "mL/min");
+	lv_obj_set_style_text_font(unit_label, &montserrat_bold_14, 0);
+	lv_obj_center(unit_label);
+
+
+
+	// ===================================
+	//     WARNINGS
+	// ===================================
+
+	/* WARNINGS TITLE BACKGROUND -------------------------------------------------*/
+	warnings_title_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(warnings_title_bg);
+	lv_obj_add_style(warnings_title_bg, &secondary_blue_bg_style, 0);
+
+	lv_obj_set_size(warnings_title_bg, 220, 32);
+	lv_obj_set_pos(warnings_title_bg, 10, 178);
+
+
+	/* WARNINGS TITLE LABEL ------------------------------------------------------*/
+	warnings_title_label = lv_label_create(warnings_title_bg);
+	lv_obj_remove_style_all(warnings_title_label);
+	lv_obj_add_style(warnings_title_label, &white_text_style, 0);
+
+	lv_label_set_text(warnings_title_label, "WARNING FLAGS");
+	lv_obj_set_style_text_font(warnings_title_label, &montserrat_bold_14, 0);
+	lv_obj_center(warnings_title_label);
+
+
+	/* OVERFLOW TEXT BACKGROUND --------------------------------------------------*/
+	high_flow_text_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(high_flow_text_bg);
+	lv_obj_add_style(high_flow_text_bg, &primary_grey_bg_style, 0);
+
+	lv_obj_set_size(high_flow_text_bg, 117, 40);
+	lv_obj_set_pos(high_flow_text_bg, 10, 220);
+
+
+	/* OVERFLOW TEXT LABEL -------------------------------------------------------*/
+	high_flow_text_label = lv_label_create(high_flow_text_bg);
+	lv_obj_remove_style_all(high_flow_text_label);
+	lv_obj_add_style(high_flow_text_label, &black_text_style, 0);
+
+	lv_label_set_text(high_flow_text_label, "HIGH FLOW");
+	lv_obj_set_style_text_font(high_flow_text_label, &montserrat_bold_14, 0);
+	lv_obj_center(high_flow_text_label);
+
+
+	/* OVERFLOW RESULT BACKGROUND ------------------------------------------------*/
+	high_flow_result_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(high_flow_result_bg);
+	lv_obj_add_style(high_flow_result_bg, &green_bg_style, 0);
+
+	lv_obj_set_size(high_flow_result_bg, 93, 40);
+	lv_obj_set_pos(high_flow_result_bg, 137, 220);
+
+
+	/* OVERFLOW RESULT LABEL -----------------------------------------------------*/
+	high_flow_result_label = lv_label_create(high_flow_result_bg);
+	lv_obj_remove_style_all(high_flow_result_label);
+	lv_obj_add_style(high_flow_result_label, &black_text_style, 0);
+
+	lv_label_set_text(high_flow_result_label, "NO");
+	lv_obj_set_style_text_font(high_flow_result_label, &montserrat_bold_14, 0);
+	lv_obj_center(high_flow_result_label);
+
+
+	/* AIR TEXT BACKGROUND -------------------------------------------------------*/
+	air_text_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(air_text_bg);
+	lv_obj_add_style(air_text_bg, &primary_grey_bg_style, 0);
+
+	lv_obj_set_size(air_text_bg, 117, 40);
+	lv_obj_set_pos(air_text_bg, 10, 270);
+
+
+	/* AIR TEXT LABEL ------------------------------------------------------------*/
+	air_text_label = lv_label_create(air_text_bg);
+	lv_obj_remove_style_all(air_text_label);
+	lv_obj_add_style(air_text_label, &black_text_style, 0);
+
+	lv_label_set_text(air_text_label, "AIR IN LINE");
+	lv_obj_set_style_text_font(air_text_label, &montserrat_bold_14, 0);
+	lv_obj_center(air_text_label);
+
+
+	/* AIR RESULT BACKGROUND -----------------------------------------------------*/
+	air_result_bg = lv_obj_create(screen);
+	lv_obj_remove_style_all(air_result_bg);
+	lv_obj_add_style(air_result_bg, &green_bg_style, 0);
+
+	lv_obj_set_size(air_result_bg, 93, 40);
+	lv_obj_set_pos(air_result_bg, 137, 270);
+
+
+	/* AIR RESULT LABEL ----------------------------------------------------------*/
+	air_result_label = lv_label_create(air_result_bg);
+	lv_obj_remove_style_all(air_result_label);
+	lv_obj_add_style(air_result_label, &black_text_style, 0);
+
+	lv_label_set_text(air_result_label, "NO");
+	lv_obj_set_style_text_font(air_result_label, &montserrat_bold_14, 0);
+	lv_obj_center(air_result_label);
+}
+
+
+/* SETTER FUNCTIONS --------------------------------------------------------------*/
+
+void set_flow_rate_on_display(char * value)
+{
+	if(value_label != NULL)
+	{
+		lv_label_set_text(value_label, value);
+	}
+}
+
+void set_high_flow_state_on_display(int state)
+{
+    if(high_flow_result_bg != NULL && high_flow_result_label != NULL)
+    {
+    	if(state == WARNING_FLAG__HIGH_FLOW_YES)
+    	{
+			lv_obj_add_style(high_flow_result_bg, &red_bg_style, 0);
+			lv_label_set_text(high_flow_result_label, "YES");
+    	}
+    	else if(state == WARNING_FLAG__HIGH_FLOW_NO)
+    	{
+    		lv_obj_add_style(high_flow_result_bg, &green_bg_style, 0);
+			lv_label_set_text(high_flow_result_label, "NO");
+    	}
+    }
+}
+
+void set_air_in_line_state_on_display(int state)
+{
+    if(air_result_bg != NULL && air_result_label != NULL)
+    {
+    	if(state == WARNING_FLAG__AIR_YES)
+    	{
+			lv_obj_add_style(air_result_bg, &red_bg_style, 0);
+			lv_label_set_text(air_result_label, "YES");
+    	}
+    	else if(state == WARNING_FLAG__AIR_NO)
+    	{
+    		lv_obj_add_style(air_result_bg, &green_bg_style, 0);
+			lv_label_set_text(air_result_label, "NO");
+    	}
+    }
+}
 
 
 
