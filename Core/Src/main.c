@@ -25,6 +25,7 @@
 #include "main.h"
 
 #include <stdio.h>
+#include <string.h>
 
 // System
 #include "error_handler.h"
@@ -63,6 +64,17 @@
 #include "system/type_definitions.h"
 
 
+/* Private definitions -------------------------------------------------------*/
+
+#define sensirion_hal_sleep_us sensirion_i2c_hal_sleep_usec
+
+#define SENSOR_QUEUE_LEN 4
+
+#define DEADBAND_ML 20       // 0.020 mL/min
+
+#define FLAG_AIR_IN_LINE     (1U << 0)
+#define FLAG_HIGH_FLOW       (1U << 1)
+
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -89,31 +101,14 @@ const osThreadAttr_t sensor_task_attributes = {
 // LVGL queue
 osMessageQueueId_t sensor_queue;
 
-// Digital filter to sensor data
-static int32_t flow_filt_ml_x1000 = 0;  // mL/min × 1000
-
-
-
-/* Private definitions -------------------------------------------------------*/
-
-#define sensirion_hal_sleep_us sensirion_i2c_hal_sleep_usec
-
-#define SENSOR_QUEUE_LEN 4
-
-#define ALPHA_NUM 1             // numerador de alpha (ex: 1/10)
-#define ALPHA_DEN 10            // denominador de alpha
-#define DEADBAND_ML_X1000 20    // 0.020 mL/min
-
-#define FLAG_AIR_IN_LINE     (1U << 0)
-#define FLAG_HIGH_FLOW       (1U << 1)
-
-
 
 /* Private type definitions --------------------------------------------------*/
 typedef struct {
-    int32_t raw_flow;
+    int32_t flow_integer_part;
+    int32_t flow_decimal_part;
     int16_t raw_temp;
-    uint16_t flags;
+    int high_flow_flag;
+    int air_in_line_flag;
 } sensor_msg_t;
 
 
@@ -224,7 +219,8 @@ void lvgl_task_callback(void *argument)
 	lv_color_t * buf1 = NULL;
 	lv_color_t * buf2 = NULL;
 
-	uint32_t buf_size = LCD_H_RES * LCD_V_RES / 10 * lv_color_format_get_size(lv_display_get_color_format(lcd_disp));
+//	uint32_t buf_size = LCD_H_RES * LCD_V_RES / 10 * lv_color_format_get_size(lv_display_get_color_format(lcd_disp));
+	uint32_t buf_size = LCD_H_RES * 120 * lv_color_format_get_size(lv_display_get_color_format(lcd_disp));
 
 	buf1 = lv_malloc(buf_size);
 	if(buf1 == NULL)
@@ -252,6 +248,11 @@ void lvgl_task_callback(void *argument)
 	// Main screen load
 	main_screen_load();
 
+	// Flags cache to update display only when necessary
+    static char last_flow_str[32] = "";
+    static int  last_high_flow_state = -1;
+    static int  last_air_state       = -1;
+
 	for(;;)
 	{
 		sensor_msg_t msg;
@@ -268,37 +269,40 @@ void lvgl_task_callback(void *argument)
 		    //     FLOW RATE
 		    // =========================
 
-			int32_t i = msg.raw_flow / 1000;
-			int32_t f = (msg.raw_flow % 1000 + 50) / 100; // arredondado e truncado em uma casa decimal apenas
-			if (f < 0) f = -f;
-
 			char buf[32];
-			snprintf(buf, sizeof(buf), "%ld.%01ld", (long)i, (long)f);
+			snprintf(buf, sizeof(buf), "%ld.%01ld", (long)msg.flow_integer_part, (long)msg.flow_decimal_part);
 
-			set_flow_rate_on_display(buf);
+
+            if (strcmp(buf, last_flow_str) != 0)
+            {
+                strncpy(last_flow_str, buf, sizeof(last_flow_str));
+                last_flow_str[sizeof(last_flow_str) - 1] = '\0';
+                set_flow_rate_on_display(buf);
+            }
 
 
 		    // =========================
 		    //    WARNING FLAGS
 		    // =========================
 
-			if(msg.flags & FLAG_HIGH_FLOW)
-				set_high_flow_state_on_display(WARNING_FLAG__HIGH_FLOW_YES);
-			else
-				set_high_flow_state_on_display(WARNING_FLAG__HIGH_FLOW_NO);
+            if (msg.high_flow_flag != last_high_flow_state)
+            {
+                last_high_flow_state = msg.high_flow_flag;
+                set_high_flow_state_on_display(msg.high_flow_flag);
+            }
 
 
-			if(msg.flags & FLAG_AIR_IN_LINE)
-				set_air_in_line_state_on_display(WARNING_FLAG__AIR_YES);
-			else
-				set_air_in_line_state_on_display(WARNING_FLAG__AIR_NO);
-
+            if (msg.air_in_line_flag != last_air_state)
+            {
+                last_air_state = msg.air_in_line_flag;
+                set_air_in_line_state_on_display(msg.air_in_line_flag);
+            }
 		}
 
 		// The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
 		lv_timer_handler();
 		// raise the task priority of LVGL and/or reduce the handler period can improve the performance
-		osDelay(10);
+		osDelay(5);
 	}
 }
 
@@ -342,26 +346,31 @@ void sensor_task_callback(void * argument)
         if (error != NO_ERROR) // error executing read_measurement_data_raw()
         	continue;
 
-        // raw_flow -> mL/min × 1000
-        // 1 count = 2 uL/min = 0.002 mL/min
+        // convert to mL/min in fixed point
         int32_t flow_ml_x1000 = (int32_t)raw_flow * 2;
 
-        // deadband (elimina ruído e falsos negativos)
-        if (flow_ml_x1000 > -DEADBAND_ML_X1000 &&
-            flow_ml_x1000 <  DEADBAND_ML_X1000)
+        // deadband
+        if (flow_ml_x1000 > -DEADBAND_ML &&
+            flow_ml_x1000 <  DEADBAND_ML)
         {
             flow_ml_x1000 = 0;
         }
 
-        // filtro IIR em fix-point
-        flow_filt_ml_x1000 =
-            flow_filt_ml_x1000 +
-            (ALPHA_NUM * (flow_ml_x1000 - flow_filt_ml_x1000)) / ALPHA_DEN;
+        // get integer part
+		int32_t i = flow_ml_x1000 / 1000;
+
+		// get float part
+		int32_t f = (flow_ml_x1000 % 1000 + 50) / 100; // arredondado e truncado em uma casa decimal apenas
+		if (f < 0) f = -f;
 
         sensor_msg_t msg = {
-            .raw_flow = flow_filt_ml_x1000,
-            .raw_temp = raw_temperature,
-			.flags = signaling_flags
+            .flow_integer_part = i,
+			.flow_decimal_part = f,
+
+			.raw_temp = raw_temperature,
+
+			.high_flow_flag   = (signaling_flags & FLAG_HIGH_FLOW) ? WARNING_FLAG__HIGH_FLOW_YES : WARNING_FLAG__HIGH_FLOW_NO,
+			.air_in_line_flag = (signaling_flags & FLAG_AIR_IN_LINE) ? WARNING_FLAG__AIR_YES : WARNING_FLAG__AIR_NO
         };
 
         osStatus_t st = osMessageQueuePut(sensor_queue, &msg, 0, 0);
