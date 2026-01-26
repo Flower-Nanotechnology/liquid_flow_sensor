@@ -262,7 +262,7 @@ void lvgl_task_callback(void *argument)
 			got = 1;
 		}
 
-		if (got == 1)
+		if(got == 1)
 		{
 		    // =========================
 		    //     FLOW RATE
@@ -282,13 +282,13 @@ void lvgl_task_callback(void *argument)
 		    //    WARNING FLAGS
 		    // =========================
 
-			if(msg.flags && FLAG_HIGH_FLOW)
+			if(msg.flags & FLAG_HIGH_FLOW)
 				set_high_flow_state_on_display(WARNING_FLAG__HIGH_FLOW_YES);
 			else
 				set_high_flow_state_on_display(WARNING_FLAG__HIGH_FLOW_NO);
 
 
-			if(msg.flags && FLAG_AIR_IN_LINE)
+			if(msg.flags & FLAG_AIR_IN_LINE)
 				set_air_in_line_state_on_display(WARNING_FLAG__AIR_YES);
 			else
 				set_air_in_line_state_on_display(WARNING_FLAG__AIR_NO);
